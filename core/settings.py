@@ -40,11 +40,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     #third party apps
     'rest_framework',
-    # 'rest_framework.authtoken',
-    # 'dj_rest_auth',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
     #myApps
-    # 'personalApp',
-    # 'users',    
+    'blogApp',
+    'users',    
 ]
 
 MIDDLEWARE = [
@@ -129,3 +129,13 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+#kullanılan auth yöntemine göre update et.
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
+#eğer custom bir serializer yazdıysan burda tanımla 
+REST_AUTH = {
+    'TOKEN_SERIALIZER': 'users.serializers.CustomTokenSerializer',
+}
