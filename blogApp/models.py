@@ -31,10 +31,10 @@ class BlogPost(CreateUpdateTimeField):
     image = models.URLField(max_length=200, blank=True,
                             default="https://www.freepik.com/free-photo/teamwork-making-online-blog_11306776.htm#fromView=search&page=1&position=2&uuid=79c869b1-0b3f-451c-bd23-610137079e74")
     status = models.CharField(max_length=2, choices=STATUS)
+    slug = models.SlugField(blank=True, unique=True)
 
     def __str__(self):
-        return self.name  
-
+        return self.title  
 
 
 class Like(CreateUpdateTimeField):
