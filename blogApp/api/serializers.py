@@ -23,7 +23,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "content",
-            "time_stamp",
+            "created",
             "user",
             # "user_id",
         )

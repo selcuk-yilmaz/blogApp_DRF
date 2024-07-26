@@ -6,15 +6,15 @@ from rest_framework.exceptions import ValidationError
 from blogApp.models import (
     BlogPost,
     Category,
-    # Comment,
-    # Like,
+    Comment,
+    Like,
     View
 )
 from .serializers import (
     CategorySerializer,
     BlogPostSerializer,
-    # LikeSerializer,
-    # CommentSerializer,
+    CommentSerializer,
+    LikeSerializer,
     # PostUserSerializer,
     # ViewSerializer
 )
@@ -40,17 +40,6 @@ class BlogPostView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user) 
 
-class UserAllPosts(generics.ListAPIView):
-    queryset = BlogPost.objects.all()
-    serializer_class = BlogPostSerializer
-    # permission_classes = [IsPostOwnerOrReadOnly]
-
-    def get_queryset(self):
-        author = self.request.user
-        queryset = BlogPost.objects.filter(author=author)
-        return queryset
-
-
 class BlogPostDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = BlogPost.objects.all()
     serializer_class = BlogPostSerializer
@@ -62,4 +51,36 @@ class BlogPostDetailView(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance)
         # View.objects.get_or_create(user=request.user, post=instance)
         View.objects.create(user=request.user, post=instance)
-        return Response(serializer.data)         
+        return Response(serializer.data)
+
+class CommentView(generics.CreateAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        slug = self.kwargs.get('slug')
+        blog = get_object_or_404(BlogPost, slug=slug)
+        user = self.request.user
+        comments = Comment.objects.filter(post=blog, user=user)
+        if comments.exists():
+            raise ValidationError(
+                "You can not add another comment, for this Post !")
+        serializer.save(post=blog, user=user)   
+
+class LikeView(generics.ListCreateAPIView):
+    queryset = Like.objects.all()
+    serializer_class = LikeSerializer
+
+    def create(self, request, *args, **kwargs):
+        user = request.data.get('user_id')
+        post = request.data.get('post')
+        serializer = self.get_serializer(data=request.data)
+        exists_like = Like.objects.filter(user_id=user, post=post)
+        serializer.is_valid(raise_exception=True)
+        if exists_like:
+            exists_like.delete()
+        else:
+            self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
