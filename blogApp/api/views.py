@@ -15,7 +15,7 @@ from .serializers import (
     BlogPostSerializer,
     CommentSerializer,
     LikeSerializer,
-    # PostUserSerializer,
+    PostUserSerializer,
     # ViewSerializer
 )
 from rest_framework import permissions
@@ -84,3 +84,20 @@ class LikeView(generics.ListCreateAPIView):
             self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+
+
+class UserAllPosts(generics.ListAPIView):
+    queryset = BlogPost.objects.all()
+    serializer_class = BlogPostSerializer
+    # permission_classes = [IsPostOwnerOrReadOnly]
+
+    def get_queryset(self):
+        author = self.request.user
+        queryset = BlogPost.objects.filter(author=author)
+        return queryset   
+
+class PostUserView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = PostUserSerializer
+    # permission_classes = [permissions.IsAuthenticated]     

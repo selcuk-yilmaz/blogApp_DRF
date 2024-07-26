@@ -2,7 +2,8 @@ from rest_framework import serializers
 
 from blogApp.models import Category, BlogPost, Comment, Like, View
 
-
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -84,4 +85,19 @@ class BlogPostSerializer(serializers.ModelSerializer):
         return Comment.objects.filter(post=obj.id).count()
 
     def get_post_view_count(self, obj):
-        return View.objects.filter(post=obj.id).count()        
+        return View.objects.filter(post=obj.id).count() 
+
+class PostUserSerializer(serializers.ModelSerializer):
+    # user_posts = BlogPostSerializer(many=True, read_only=True)
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            # "profile_pic",
+            # "biography",
+            # "user_posts"
+        )           
