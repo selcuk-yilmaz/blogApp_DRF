@@ -20,7 +20,7 @@ from .serializers import (
 )
 from rest_framework import permissions
 from .permissions import IsPostOwnerOrReadOnly, IsAdminUserOrReadOnly
-# from .pagination import CustomLimitOffsetPagination
+from .pagination import SmallPageNumberPagination, MyLimitOffsetPagination, MycursorPagination
 from django.contrib.auth import get_user_model
 # User = settings.AUTH_USER_MODEL
 User = get_user_model()
@@ -35,7 +35,7 @@ class BlogPostView(generics.ListCreateAPIView):
     queryset = BlogPost.objects.filter(status="p")
     serializer_class = BlogPostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    # pagination_class = CustomLimitOffsetPagination
+    pagination_class = MyLimitOffsetPagination
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user) 
@@ -57,6 +57,7 @@ class CommentView(generics.CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = SmallPageNumberPagination
 
     def perform_create(self, serializer):
         slug = self.kwargs.get('slug')
@@ -100,4 +101,5 @@ class UserAllPosts(generics.ListAPIView):
 class PostUserView(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = PostUserSerializer
-    permission_classes = [permissions.IsAuthenticated]     
+    permission_classes = [permissions.IsAuthenticated]  
+    pagination_class = MycursorPagination   

@@ -5,4 +5,4 @@ def get_random_code():
     return code
 
 
-print("uretilen rondom code",get_random_code())
+# print("uretilen rondom code",get_random_code())
