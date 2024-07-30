@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
+    'django_filters',
     #myApps
     'blogApp',
     'users',    
@@ -139,3 +140,14 @@ REST_FRAMEWORK = {
 REST_AUTH = {
     'TOKEN_SERIALIZER': 'users.serializers.CustomTokenSerializer',
 }
+
+#GLOBAL SETTINGS FOR REST:
+# REST_FRAMEWORK = {
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',  DİKKAT BUNU KULLANACAKSAN LOCAL AYARI KALDIR
+    # 'PAGE_SIZE': 3,                                                                DİKKAT BUNU KULLANACAKSAN LOCAL AYARI KALDIR
+#     'DEFAULT_FILTER_BACKENDS': [                                                   DİKKAT FİLTER-SEARCH-ORDER KULLANACAKSAN LOCAL AYAR FARKLI OLACAK
+#         'django_filters.rest_framework.DjangoFilterBackend', # pip install django-filter # add to INSTALLED_APPS 
+#         'rest_framework.filters.SearchFilter', # Global settings for Search
+#         'rest_framework.filters.OrderingFilter', # Global settings for Ordering
+#     ]
+# }

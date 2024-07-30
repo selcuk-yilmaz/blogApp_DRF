@@ -20,11 +20,11 @@ from .serializers import (
 )
 from rest_framework import permissions
 from .permissions import IsPostOwnerOrReadOnly, IsAdminUserOrReadOnly
-from .pagination import SmallPageNumberPagination, MyLimitOffsetPagination, MycursorPagination
+from .pagination import MyPageNumberPagination, MyLimitOffsetPagination, MycursorPagination
 from django.contrib.auth import get_user_model
 # User = settings.AUTH_USER_MODEL
 User = get_user_model()
-
+from rest_framework.filters import SearchFilter
 
 class CategoryView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
@@ -36,8 +36,11 @@ class BlogPostView(generics.ListCreateAPIView):
     serializer_class = BlogPostSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     pagination_class = MyLimitOffsetPagination
+    filter_backends = [SearchFilter]
+    search_fields = ['title']
 
     def perform_create(self, serializer):
+        print("gelen istek", self.request.user)
         serializer.save(author=self.request.user) 
 
 class BlogPostDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -57,7 +60,7 @@ class CommentView(generics.CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    pagination_class = SmallPageNumberPagination
+    pagination_class = MyPageNumberPagination
 
     def perform_create(self, serializer):
         slug = self.kwargs.get('slug')
@@ -92,6 +95,8 @@ class UserAllPosts(generics.ListAPIView):
     queryset = BlogPost.objects.all()
     serializer_class = BlogPostSerializer
     permission_classes = [IsPostOwnerOrReadOnly]
+    filter_backends = [SearchFilter]
+    search_fields = ['title']
 
     def get_queryset(self):
         author = self.request.user
